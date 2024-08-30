@@ -9,14 +9,15 @@ import "ace-builds/src-noconflict/snippets/css";
 import "ace-builds/src-noconflict/snippets/javascript";
 import "ace-builds/src-noconflict/snippets/html";
 import "ace-builds/src-noconflict/ext-language_tools";
-import { useState } from "react";
+
 
 interface IAceEditorProps {
   mode: string;
   width: string;
   height: string;
   name: string;
- 
+  onChange: (newValue: string) => void;
+  value: string
   className?: string;
 }
 export default function AceCodeEditor({
@@ -25,15 +26,13 @@ export default function AceCodeEditor({
   height,
   name,
   className,
+  onChange,
+  value
 }: IAceEditorProps) {
 
-  const [value, setValue] = useState<string>("");
 
-  function onChange(newValue: string) {
-    setValue(newValue)
-  }
 
-  console.log(value);
+  
   return (
     <>
       <AceEditor

@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import AceCodeEditor from "./components/ui/aceEditor";
 import logoIcon from "/play-svgrepo-com.svg";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import IFrameOutput from "./components/ui/IFrame";
+import ConsoleLog from "./components/ui/console";
 
-
-const defaultSize = [100, 100, 100]
-const panelSize = window.localStorage.getItem("run_resizable_panels")
+const defaultSize = [100, 100, 100];
+const panelSize = window.localStorage.getItem("run_resizable_panels");
 const size: number[] = panelSize ? JSON.parse(panelSize) : defaultSize;
 
 function App() {
@@ -19,6 +20,45 @@ function App() {
   function onLayout(sizes: number[]) {
     window.localStorage.setItem("run_resizable_panels", JSON.stringify(sizes));
   }
+
+  const [htmlValue, setHtmlValue] = useState<string>("");
+  const [cssValue, setCssValue] = useState<string>("");
+  const [javascriptValue, setJavscriptValue] = useState<string>("");
+  const [output, setOutput] = useState<string>("");
+  const [toggleConsole, setToggleConsole] = useState<boolean>(false);
+
+  function onChangeHtml(newValue: string) {
+    setHtmlValue(newValue);
+  }
+  function onChangeCss(newValue: string) {
+    setCssValue(newValue);
+  }
+  function onChangeJavascript(newValue: string) {
+    setJavscriptValue(newValue);
+  }
+
+  function handleToggleConsole(){
+    setToggleConsole(!toggleConsole);
+  }
+
+  const code = `<html>
+  <head>
+    <style>${cssValue}</style>
+  </head>
+  <body>
+    ${htmlValue}
+    <script>${javascriptValue}</script>
+  </body>
+  </html>`
+
+  useEffect(() => {
+    setOutput(code)
+
+  }, [htmlValue, cssValue, javascriptValue]);
+
+
+
+
 
   return (
     <>
@@ -39,11 +79,9 @@ function App() {
         </header>
 
         <div className="w-full">
-          {/* <PanelGroup direction="vertical">
-            <Panel defaultSize={90}> */}
           <PanelGroup direction="horizontal" onLayout={onLayout}>
             <div className="flex items-center w-full">
-              <Panel className="w-full" defaultSize={size[0]} minSize={10} >
+              <Panel className="w-full" defaultSize={size[0]} minSize={10}>
                 <div className="w-full">
                   <button className="py-2 px-6 bg-gray-900 text-pink-700 text-sm">
                     HTML
@@ -53,6 +91,8 @@ function App() {
                     height="400px"
                     name="html"
                     mode="html"
+                    value={htmlValue}
+                    onChange={onChangeHtml}
                   />
                 </div>
               </Panel>
@@ -69,6 +109,8 @@ function App() {
                     height="400px"
                     name="css"
                     mode="css"
+                    value={cssValue}
+                    onChange={onChangeCss}
                   />
                 </div>
               </Panel>
@@ -91,6 +133,8 @@ function App() {
                       height="400px"
                       name="javascript"
                       mode="javascript"
+                      value={javascriptValue}
+                      onChange={onChangeJavascript}
                     />
                   ) : (
                     <AceCodeEditor
@@ -98,19 +142,23 @@ function App() {
                       height="400px"
                       name="typescript"
                       mode="typescript"
+                      value={javascriptValue}
+                      onChange={onChangeJavascript}
                     />
                   )}
                 </div>
               </Panel>
             </div>
           </PanelGroup>
-          {/* </Panel> */}
-          {/* <PanelResizeHandle className="w-full h-2 bg-slate-500" /> */}
 
-          {/* <Panel defaultSize={10}> */}
-          <div className="w-full h-20 overflow-y-auto bg-slate-200 border-[4px] border-slate-700"></div>
-          {/* </Panel>
-          </PanelGroup> */}
+          <section className="relative">
+            {
+              !toggleConsole ? <IFrameOutput output={output}/> : <ConsoleLog output={output} javascript={javascriptValue}/>
+            }
+            
+
+            <button onClick={handleToggleConsole} className="fixed bottom-0 right-8 cursor-pointer">console</button>
+          </section>
         </div>
       </section>
     </>
