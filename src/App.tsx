@@ -157,7 +157,7 @@ function App() {
             }
             
 
-            <button onClick={handleToggleConsole} className="fixed bottom-0 right-8 cursor-pointer">console</button>
+            <button onClick={handleToggleConsole} className="fixed bg-gray-600 capitalize text-slate-100 px-2 py-1 bottom-1 text-xs right-8 cursor-pointer">console</button>
           </section>
         </div>
       </section>
