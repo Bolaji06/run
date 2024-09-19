@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import AceCodeEditor from "./components/ui/aceEditor";
-import logoIcon from "/play-svgrepo-com.svg";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import IFrameOutput from "./components/ui/IFrame";
 import ConsoleLog from "./components/ui/console";
+import Header from "./components/Header";
 
 const defaultSize = [100, 100, 100];
 const panelSize = window.localStorage.getItem("run_resizable_panels");
@@ -63,21 +63,9 @@ function App() {
   return (
     <>
       <section className="">
-        <header className="p-2 border-b-2 border-gray-900">
-          <div className="flex items-center gap-1">
-            <div>
-              <img
-                src={logoIcon}
-                alt="run logo"
-                className="w-4 aspect-square"
-              />
-            </div>
-            <div className="">
-              <h2 className="text-sm font-bold text-white pb-1">run</h2>
-            </div>
-          </div>
-        </header>
-
+        <nav>
+          <Header />
+        </nav>
         <div className="w-full">
           <PanelGroup direction="horizontal" onLayout={onLayout}>
             <div className="flex items-center w-full">
