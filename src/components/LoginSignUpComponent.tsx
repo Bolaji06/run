@@ -1,20 +1,38 @@
 import clsx from "clsx";
-import { X } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { Loader, X } from "lucide-react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { TLoginSchema } from "@/lib/validation";
+import { loginSchema, registerSchema, TLoginSchema, TRegisterSchema } from "@/lib/validation";
+
+import { ZodError } from "zod";
+import { loginDataResponse, TInputError } from "@/lib/definitions";
+import { cookies } from "next/headers";
 
 interface LoginSigUpProps {
     closeAuth: () => void
 }
+
+const REGISTER_API = 'http://localhost:3000/api/auth/register';
+const LOGIN_API = 'http://localhost:3000/api/auth/login';
 export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
   const [toggleTab, setToggleTab] = useState<string>("login");
 
   const[loginInput, setLoginInput] = useState<TLoginSchema>({
     email: '',
     password: ''
+  });
+  const [registerInput, setRegisterInput] = useState<TRegisterSchema>({
+    email: '',
+    username: '',
+    password: '',
   })
+  const [inputError, setInputError] = useState<TInputError[] | null>(null);
+  const [registerError, setRegisterError] = useState<TInputError[] | null>(null);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isRegister, setIsRegister] = useState<boolean>(false);
+  const [loginData, setLoginData] = useState<loginDataResponse | null>(null);
+  const [registerData, setRegisterData] = useState(null);
 
   function handleLoginOnChange(e: ChangeEvent<HTMLInputElement>){
     const { name, value } = e.target;
@@ -25,6 +43,15 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
         }
     })
   }
+  function handleRegisterOnChange(e: ChangeEvent<HTMLInputElement>){
+    const { name, value } = e.target;
+    setRegisterInput((prevState) => {
+      return {
+        ...prevState,
+        [name]: value,
+      }
+    })
+  }
 
   function handleLoginTab() {
     setToggleTab("login");
@@ -33,11 +60,88 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
     setToggleTab("register");
   }
 
-  function loginOnSubmit(e: FormEvent<HTMLFormElement>){
+  async function loginOnSubmit(e: FormEvent<HTMLFormElement>){
     e.preventDefault();
+    setIsLogin(false);
+    try{
+      setIsLogin(true)
+      const validateLoginInput = loginSchema.parse(loginInput);
+      const option = {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validateLoginInput)
+      }
+      const response = await fetch(LOGIN_API, option);
+      const data = await response.json();
 
+      setLoginData(data);
+
+    }catch(error){
+      if (error instanceof ZodError){
+       const validateError = error.issues.map((issues) => {
+        return {
+          message: issues.message,
+          path: issues.path
+        }
+       })
+       console.log(validateError)
+       if (validateError && validateError.length){
+        setInputError(validateError)
+       }
+      }
+    }finally{
+      setIsLogin(false);
+    }
   }
 
+  // Not sure
+  useEffect(() => {
+    if (loginData && loginData.success === true){
+      cookies().set("user_login", loginData.token)
+    }
+  }, [loginData])
+
+  async function registerOnSubmit(e: FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    setIsRegister(false);
+    try{
+      setIsRegister(true);
+      const validateRegisterInput = registerSchema.parse(registerInput);
+      const option = {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(validateRegisterInput),
+      }
+
+      const response = await fetch(REGISTER_API, option);
+      const data = await response.json();
+
+      console.log(data);
+      setRegisterData(data);
+
+    }catch(error){
+      if (error instanceof ZodError){
+        const validateError = error.issues.map((issues) => {
+          return {
+            message: issues.message,
+            path: issues.path
+          }
+        })
+        console.log(validateError)
+        setRegisterError(validateError);
+      }
+
+    }finally{
+      setIsRegister(false);
+    }
+  }
+
+  console.log(registerData);
+  console.log(loginData)
   return (
     <>
       <section className="h-screen">
@@ -74,16 +178,25 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
             {toggleTab === "login" && (
               <section className="login mt-2">
                 <div>
-                  <form action="" className="space-y-1" onSubmit={loginOnSubmit}>
+                  <form action="" noValidate className="space-y-1" onSubmit={loginOnSubmit}>
                     <div>
                       <label className="text-sm text-gray-600" id="email">Email</label>
-                      <Input onChange={handleLoginOnChange} value={loginInput.email} name="email" className="rounded-full" id="email" type="email"/>
+                      <Input onChange={handleLoginOnChange} value={loginInput.email} onFocus={() => setInputError(null)}
+                       name="email" className="rounded-full" id="email" type="email"/>
+                     {inputError ? <p className="text-sm text-red-500 first-letter:uppercase">{inputError[0]?.message}</p> : ""}
                     </div>
                     <div className="py-3">
                       <label className="text-sm text-gray-600" id="password">Password</label>
-                      <Input onChange={handleLoginOnChange} value={loginInput.password} name="password" className="rounded-full" id="password" type="password"/>
+                      <Input onChange={handleLoginOnChange} value={loginInput.password} onFocus={() => setInputError(null)}
+                      name="password" className="rounded-full" id="password" type="password"/>
+                      { inputError ? <p className="text-sm text-red-500 first-letter:uppercase">{inputError[1]?.message}</p>: ""}
                     </div>
-                    <Button type="submit" className="w-full">Login</Button>
+                    <Button type="submit" className={`inline-flex gap-3 w-full ${clsx({'cursor-not-allowed': isLogin})}`} 
+                    disabled={isLogin}
+                    aria-disabled={isLogin}>
+                      { isLogin && <Loader className="animate-spin text-white" size={18}/>}
+                      Login
+                    </Button>
                   </form>
                 </div>
               </section>
@@ -92,20 +205,30 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
             {toggleTab === "register" && (
               <section className="register mt-2">
                 <div>
-                  <form action="" className="space-y-1">
+                  <form action="" noValidate className="space-y-1" onSubmit={registerOnSubmit}>
                     <div>
                       <label className="text-sm text-gray-600" id="email">Email</label>
-                      <Input className="rounded-full" id="email" type="email"/>
+                      <Input className="rounded-full" id="email" type="email" onChange={handleRegisterOnChange}
+                      name="email" value={registerInput.email} onFocus={() => setRegisterError(null)}/>
+                       {registerError ? <p className="text-sm text-red-500 first-letter:uppercase">{registerError[0]?.message}</p> : ""}
                     </div>
                     <div>
                       <label className="text-sm text-gray-600" id="username">Username</label>
-                      <Input className="rounded-full" id="username" type="text"/>
+                      <Input className="rounded-full" id="username" type="text" onChange={handleRegisterOnChange}
+                      value={registerInput.username} name="username" onFocus={() => setRegisterError(null)}/>
+                       {registerError ? <p className="text-sm text-red-500 first-letter:uppercase">{registerError[1]?.message}</p> : ""}
                     </div>
                     <div className="pb-3">
                       <label className="text-sm text-gray-600" id="password">Password</label>
-                      <Input className="rounded-full" id="password" type="password"/>
+                      <Input className="rounded-full" id="password" type="password" onChange={handleRegisterOnChange}
+                      value={registerInput.password} name="password" onFocus={() => setRegisterError(null)}/>
+                       {registerError ? <p className="text-sm text-red-500 first-letter:uppercase">{registerError[2]?.message}</p> : ""}
                     </div>
-                    <Button className="w-full">Register</Button>
+                    <Button disabled={isRegister} aria-disabled={isRegister}
+                    className={`w-full inline-flex gap-3 items-center ${clsx({'cursor-not-allowed': isRegister})}`}>
+                      {isRegister && <Loader size={18} className="animate-spin text-white"/>}
+                      Register
+                    </Button>
                   </form>
                 </div>
               </section>
