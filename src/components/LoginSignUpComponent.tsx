@@ -7,7 +7,7 @@ import { loginSchema, registerSchema, TLoginSchema, TRegisterSchema } from "@/li
 
 import { ZodError } from "zod";
 import { loginDataResponse, TInputError } from "@/lib/definitions";
-import { cookies } from "next/headers";
+//import { deleteCookies, getCookie } from "@/lib/utils";
 
 interface LoginSigUpProps {
     closeAuth: () => void
@@ -15,6 +15,8 @@ interface LoginSigUpProps {
 
 const REGISTER_API = 'http://localhost:3000/api/auth/register';
 const LOGIN_API = 'http://localhost:3000/api/auth/login';
+
+
 export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
   const [toggleTab, setToggleTab] = useState<string>("login");
 
@@ -96,12 +98,13 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
     }
   }
 
-  // Not sure
+
   useEffect(() => {
-    if (loginData && loginData.success === true){
-      cookies().set("user_login", loginData.token)
+    if (loginData && loginData.success){
+      document.cookie = `login=${loginData.token}; path='/'`
     }
-  }, [loginData])
+  }, [loginData?.success])
+  
 
   async function registerOnSubmit(e: FormEvent<HTMLFormElement>){
     e.preventDefault();
@@ -140,7 +143,6 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
     }
   }
 
-  console.log(registerData);
   console.log(loginData)
   return (
     <>
