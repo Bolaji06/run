@@ -17,9 +17,9 @@ export const profileDropdownLinks = [
         href: '/support',
         icon: ReceiptText,
     },
-    {
-        name: 'Logout',
-        href: '/logout',
-        icon: LogOut
-    },
+    // {
+    //     name: 'Logout',
+    //     href: '/logout',
+    //     icon: LogOut
+    // },
 ]

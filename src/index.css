@@ -71,3 +71,49 @@
 body{
   background-color: #1e1d1d;
 }
+
+/* SplitPane */
+.Resizer {
+  background: #e2e2e2;
+  opacity: 0.2;
+  z-index: 1;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
+}
+
+.Resizer.horizontal {
+  height: 4px;
+  margin: 0 0;
+  cursor: row-resize;
+  width: 100%;
+  transition: all .1s ease-in-out;
+}
+.Resizer.Resizer.horizontal:hover {
+  height: 10px;
+}
+
+.Resizer.vertical {
+  width: 4px;
+  margin: 0 0;
+  cursor: col-resize;
+  transition: all .1s ease-in-out;
+}
+.Resizer.vertical:hover {
+  width: 10px;
+}
+.Resizer.disabled {
+  cursor: not-allowed;
+}
+.Resizer.disabled:hover {
+  border-color: transparent;
+}
+
+.Resizer.vertical {
+  margin: 0 0px;
+  cursor: col-resize;
+}
+

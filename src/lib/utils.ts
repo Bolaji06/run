@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import dayjs from 'dayjs'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -45,7 +46,18 @@ export function decodeToken(token: string){
 
 
   }catch(err){
-    console.log(err);
-    
+    console.log(err); 
   }
+}
+
+export function hasCookie(cname: string): boolean {
+  if (!getCookie(cname)){
+    return false;
+  }
+  return true;
+}
+
+export function formatDate(timestamp: string){
+  return dayjs(timestamp).format('MMMM YYYY')
+
 }
