@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
-import "./App.css";
-import AceCodeEditor from "./components/ui/aceEditor";
+import AceCodeEditor from "@/components/ui/aceEditor";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import IFrameOutput from "./components/ui/IFrame";
-import ConsoleLog from "./components/ui/console";
-import Header from "./components/Header";
+import IFrameOutput from "@/components/ui/IFrame";
+import ConsoleLog from "@/components/ui/console";
+import Header from "@/components/Header";
+import { updateWorkspace } from "@/utils/data";
+import { useParams } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const defaultSize = [100, 100, 100];
 const panelSize = window.localStorage.getItem("run_resizable_panels");
 const size: number[] = panelSize ? JSON.parse(panelSize) : defaultSize;
 
-function App() {
+interface PlayProps {
+  html: string;
+  css: string;
+  javascript: string;
+}
+export default function Play({ html, css, javascript }: PlayProps) {
   const [toggleScript, setToggleScript] = useState<boolean>(false);
- // const [heightValue, setHeightValue] = useState("450px");
 
   function handleToggleScript() {
     setToggleScript(!toggleScript);
@@ -22,11 +28,15 @@ function App() {
     window.localStorage.setItem("run_resizable_panels", JSON.stringify(sizes));
   }
 
-  const [htmlValue, setHtmlValue] = useState<string>("");
-  const [cssValue, setCssValue] = useState<string>("");
-  const [javascriptValue, setJavscriptValue] = useState<string>("");
+  const [htmlValue, setHtmlValue] = useState<string>(html);
+  const [cssValue, setCssValue] = useState<string>(css);
+  const [javascriptValue, setJavscriptValue] = useState<string>(javascript);
   const [output, setOutput] = useState<string>("");
   const [toggleConsole, setToggleConsole] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const { id } = useParams();
+  const { toast } = useToast();
 
   function onChangeHtml(newValue: string) {
     setHtmlValue(newValue);
@@ -40,6 +50,35 @@ function App() {
 
   function handleToggleConsole() {
     setToggleConsole(!toggleConsole);
+  }
+
+  function saveWorkSpace() {
+    const saveSheetContents = async () => {
+      setIsSaving(false);
+      try {
+        setIsSaving(true);
+        if (id) {
+          const updatedSheets = await updateWorkspace(id, [
+            htmlValue,
+            cssValue,
+            javascriptValue,
+          ]);
+          if (updatedSheets.success) {
+            toast({
+              title: "Save!",
+              description: "Workspace saved successfully",
+            });
+          }
+        }
+      } catch (error) {
+        if (error) {
+          console.log(error);
+        }
+      }finally{
+        setIsSaving(false);
+      }
+    };
+    saveSheetContents();
   }
 
   const code = `<html>
@@ -58,9 +97,9 @@ function App() {
 
   return (
     <>
-     <section className="">
+      <section className="">
         <nav>
-          <Header />
+          <Header saveWorkspace={saveWorkSpace} isSaving={isSaving}/>
         </nav>
         <div className="w-full">
           <PanelGroup direction="horizontal" onLayout={onLayout}>
@@ -154,5 +193,3 @@ function App() {
     </>
   );
 }
-
-export default App;

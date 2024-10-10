@@ -87,7 +87,7 @@ export default function ConsoleLog({
   return (
     <section className="w-full">
       <iframe ref={iframeRef} style={{ display: "none" }} />
-      <div className="h-20 overflow-y-auto bg-slate-800 border-4 border-slate-700 p-2">
+      <div className="h-32 overflow-y-auto bg-slate-800 border-4 border-slate-700 p-2">
         {consoleLogs.map((log, index) => (
           <div
             key={index}
