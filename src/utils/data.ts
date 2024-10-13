@@ -88,4 +88,52 @@ export async function updateWorkspace(id: string, contents: string[]) {
   }
 }
 
+export async function renameWorkspace(id: string, title: string) {
+  const API = `http://localhost:3000/api/workspace/rename/${id}`;
+  const tokenId = getCookie("login");
+  const option = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + tokenId,
+    },
+    body: JSON.stringify({ title }),
+  };
 
+  try {
+    const response = await fetch(API, option);
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return error;
+    }
+  }
+}
+
+export async function deleteWorkspace(id: string) {
+  const API = `http://localhost:3000/api/workspace/${id}`;
+  const tokenId = getCookie("login");
+
+  const options = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + tokenId,
+    },
+  };
+
+  try {
+    const response = await fetch(API, options);
+    const data = await response.json();
+
+    console.log(data)
+
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return error;
+    }
+  }
+}
