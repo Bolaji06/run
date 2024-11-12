@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import logoIcon from "/play-svgrepo-com.svg";
 import { useEffect, useState } from "react";
 import LoginSignupComponent from "./LoginSignUpComponent";
-import { getCookie } from "@/lib/utils";
+import { getCookie } from "@/utils/utils";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
 import avatar from "../../public/avatar.svg";
@@ -63,14 +63,20 @@ export default function Header({ saveWorkspace, isSaving }: IHeaderProps) {
           <div className="flex gap-3 items-center px-2">
             {session && (
               <Button
-                className={`${clsx({'bg-gray-800/70 cursor-not-allowed': isSaving})} flex gap-2 items-center rounded-2xl bg-gray-800 py-2 hover:bg-gray-800/50`}
+                className={`${clsx({
+                  "bg-gray-800/70 cursor-not-allowed": isSaving,
+                })} flex gap-2 items-center rounded-2xl bg-gray-800 py-2 hover:bg-gray-800/50`}
                 title="save"
                 onClick={saveWorkspace}
                 disabled={isSaving}
                 aria-disabled={isSaving}
               >
-                { isSaving ? "Saving" : "Save"}
-               { isSaving ? <Loader2  className="animate-spin" size={19}/> : <HardDriveDownload size={19} className="text-gray-300" />}
+                {isSaving ? "Saving" : "Save"}
+                {isSaving ? (
+                  <Loader2 className="animate-spin" size={19} />
+                ) : (
+                  <HardDriveDownload size={19} className="text-gray-300" />
+                )}
               </Button>
             )}
 

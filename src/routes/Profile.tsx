@@ -1,10 +1,10 @@
-import { decodeToken, formatDate, getCookie } from "@/lib/utils";
+import { decodeToken, formatDate, getCookie } from "@/utils/utils";
 import dAvatar from "../../public/avatar.svg";
 import { Input } from "@/components/ui/input";
 import WorkSpaceCard from "@/components/WorkspaceCard";
 import { ChangeEvent, useEffect, useState } from "react";
 import { getAllWorkspace } from "@/utils/data";
-import { IUserWorkspace } from "@/lib/definitions";
+import { IUserWorkspace } from "@/utils/definitions";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 import CreateWorkSpaceDialog from "@/components/CreateWorkSpaceDialog";

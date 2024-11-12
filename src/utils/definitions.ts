@@ -40,3 +40,23 @@ export interface IPlaygroundData {
     success: boolean;
     workspace: IWorkspace;
 }
+
+export interface IUser {
+    id: string;
+    username: string;
+    email: string;
+    avatar: string;
+}
+export interface IAccountResponse {
+    success: boolean;
+    user: IUser;
+}
+export interface ICredentials {
+    email: string;
+    password: string;
+}
+
+export interface ILoginResponse {
+    success: boolean;
+    message: string;
+}

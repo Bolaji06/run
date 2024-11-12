@@ -10,22 +10,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { decodeToken, getCookie } from "@/lib/utils";
+import { decodeToken, getCookie } from "@/utils/utils";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { deleteWorkspace } from "@/utils/data";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
 
 interface IDataResult {
   success: boolean;
   newWorkSpace: any;
 }
 interface RenameDialogProps {
-    id: string;
-    title: string;
+  id: string;
+  title: string;
 }
-export default function DeleteWorkSpaceDialog({ id, title }: RenameDialogProps) {
+export default function DeleteWorkSpaceDialog({
+  id,
+  title,
+}: RenameDialogProps) {
   const token = getCookie("login");
   const userProfile = decodeToken(token);
 
@@ -34,11 +36,11 @@ export default function DeleteWorkSpaceDialog({ id, title }: RenameDialogProps) 
 
   const [result, setResult] = useState<IDataResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const navigate = useNavigate();
 
-  function handleOnSubmit(e: FormEvent<HTMLFormElement>){
+  function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const deletingWorkspace = async () => {
       setLoading(false);
@@ -46,28 +48,23 @@ export default function DeleteWorkSpaceDialog({ id, title }: RenameDialogProps) 
         setLoading(true);
         const data = await deleteWorkspace(id);
         setResult(data);
-
-      }catch(error){
-        console.log(error);
-      }finally{
+      } catch (error) {
+      } finally {
         setLoading(false);
       }
-    }
+    };
     deletingWorkspace();
   }
 
   useEffect(() => {
-    if (result && result?.success){
+    if (result && result?.success) {
       toast({
-        title: 'Success!',
-        description: 'Workspace deleted'
-      })
+        title: "Success!",
+        description: "Workspace deleted",
+      });
       navigate(0);
     }
-
-  }, [result?.success])
-
-  console.log(result)
+  }, [result?.success]);
 
   return (
     <>
@@ -81,26 +78,30 @@ export default function DeleteWorkSpaceDialog({ id, title }: RenameDialogProps) 
         <DialogContent className="sm:max-w-md bg-gray-800 border-none">
           <DialogHeader>
             <DialogTitle className="text-slate-300">
-                Delete <span className="font-semibold">"{title}"</span>
-               
+              Delete <span className="font-semibold">"{title}"</span>
             </DialogTitle>
-            <p className="text-slate-400">You're about to delete this workspace action can't be undone</p>
+            <p className="text-slate-400">
+              You're about to delete this workspace action can't be undone
+            </p>
           </DialogHeader>
           <div className="inline-flex justify-between py-2">
             <form onSubmit={handleOnSubmit} className="space-y-3">
-              
-              <Button disabled={loading} type="submit"
-               className="inline-flex bg-red-600 hover:bg-red-800 items-center gap-3 text-slate-100">
+              <Button
+                disabled={loading}
+                type="submit"
+                className="inline-flex bg-red-600 hover:bg-red-800 items-center gap-3 text-slate-100"
+              >
                 {loading ? "Deleting" : "Delete"}
-               {loading && <Loader className="animate-spin text-slate-200" size={18}/>}
-                </Button>
+                {loading && (
+                  <Loader className="animate-spin text-slate-200" size={18} />
+                )}
+              </Button>
             </form>
             <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Cancel
-            </Button>
-          </DialogClose>
-
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
+            </DialogClose>
           </div>
         </DialogContent>
       </Dialog>
