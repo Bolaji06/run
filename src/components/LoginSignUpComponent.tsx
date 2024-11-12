@@ -8,15 +8,15 @@ import {
   registerSchema,
   TLoginSchema,
   TRegisterSchema,
-} from "@/lib/validation";
+} from "@/utils/validation";
 
 import { ZodError } from "zod";
 import {
   loginDataResponse,
   registerDataResponse,
   TInputError,
-} from "@/lib/definitions";
-import { setCookies } from "@/lib/utils";
+} from "@/utils/definitions";
+import { setCookies } from "@/utils/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 //import { deleteCookies, getCookie } from "@/lib/utils";
@@ -125,8 +125,6 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
       closeAuth();
     }
   }, [loginData?.success]);
-
-  console.log(loginData);
 
   useEffect(() => {
     if (registerData?.success) {
@@ -281,11 +279,14 @@ export default function LoginSignupComponent({ closeAuth }: LoginSigUpProps) {
                       Login
                     </Button>
                   </form>
-                  {
-                    loginData && !loginData.success && <p className="inline-flex items-center gap-1 text-red-500 text-sm">
-                     <OctagonAlert size={15}/> <span className="first-letter:capitalize">{loginData.message}</span>
-                      </p>
-                  }
+                  {loginData && !loginData.success && (
+                    <p className="inline-flex items-center gap-1 text-red-500 text-sm">
+                      <OctagonAlert size={15} />{" "}
+                      <span className="first-letter:capitalize">
+                        {loginData.message}
+                      </span>
+                    </p>
+                  )}
                 </div>
               </section>
             )}

@@ -1,5 +1,5 @@
 import DropDownMenu from "./ui/menu-dropdown";
-import { IWorkspace } from "@/lib/definitions";
+import { IWorkspace } from "@/utils/definitions";
 import { Link } from "react-router-dom";
 
 interface WorkSpaceCardProps {

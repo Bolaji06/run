@@ -2,19 +2,19 @@ import { profileDropdownLinks } from "@/utils/links";
 import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteCookies } from "@/lib/utils";
+import { deleteCookies } from "@/utils/utils";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProfileDropdown() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  function handleLogout(){
+
+  function handleLogout() {
     deleteCookies("login");
     navigate(0);
     toast({
-      title: 'Logout successful',
-      description: "You've successfully logout"
+      title: "Logout successful",
+      description: "You've successfully logout",
     });
   }
 
@@ -38,9 +38,10 @@ export default function ProfileDropdown() {
               </li>
             );
           })}
-          <Button 
-          onClick={handleLogout}
-          className="bg-transparent text-base px-3 hover:bg-gray-600 font-normal justify-start py-1 rounded-none w-full text-slate-300 flex gap-3">
+          <Button
+            onClick={handleLogout}
+            className="bg-transparent text-base px-3 hover:bg-gray-600 font-normal justify-start py-1 rounded-none w-full text-slate-300 flex gap-3"
+          >
             <LogOut size={15} />
             Logout
           </Button>

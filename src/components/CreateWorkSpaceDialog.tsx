@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { decodeToken, getCookie } from "@/lib/utils";
+import { decodeToken, getCookie } from "@/utils/utils";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { createWorkSpace } from "@/utils/data";
 import { useNavigate } from "react-router-dom";
@@ -31,15 +31,15 @@ export default function CreateWorkSpaceDialog() {
   const [textInput, setTextInput] = useState<string>("");
   const [result, setResult] = useState<IDataResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { toast } = useToast()
+  const { toast } = useToast();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   function handleInput(e: ChangeEvent<HTMLInputElement>) {
     setTextInput(e.target.value);
   }
 
-  function handleOnSubmit(e: FormEvent<HTMLFormElement>){
+  function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const createNewWorkSpace = async () => {
       setLoading(false);
@@ -47,26 +47,24 @@ export default function CreateWorkSpaceDialog() {
         setLoading(true);
         const data = await createWorkSpace(username, textInput);
         setResult(data);
-
-      }catch(error){
+      } catch (error) {
         console.log(error);
-      }finally{
+      } finally {
         setLoading(false);
       }
-    }
+    };
     createNewWorkSpace();
   }
 
   useEffect(() => {
-    if (result && result?.success){
+    if (result && result?.success) {
       toast({
-        title: 'Success!',
-        description: 'New workspace created'
-      })
+        title: "Success!",
+        description: "New workspace created",
+      });
       navigate(0);
     }
-
-  }, [result?.success])
+  }, [result?.success]);
 
   return (
     <>
@@ -91,11 +89,16 @@ export default function CreateWorkSpaceDialog() {
                 className="w-full border-none text-slate-50 bg-gray-600 outline-none focus-within:outline-gray-400 placeholder:text-slate-300"
                 placeholder="Workspace name "
               />
-              <Button disabled={loading} type="submit"
-               className="inline-flex items-center gap-3 text-slate-200">
+              <Button
+                disabled={loading}
+                type="submit"
+                className="inline-flex items-center gap-3 text-slate-200"
+              >
                 Create
-               {loading && <Loader className="animate-spin text-slate-200" size={18}/>}
-                </Button>
+                {loading && (
+                  <Loader className="animate-spin text-slate-200" size={18} />
+                )}
+              </Button>
             </form>
           </div>
         </DialogContent>

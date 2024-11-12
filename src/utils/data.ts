@@ -1,4 +1,5 @@
-import { getCookie } from "@/lib/utils";
+import { ICredentials } from "@/utils/definitions";
+import { getCookie } from "@/utils/utils";
 
 const WORKSPACE_API = "http://localhost:3000/api/workspace";
 
@@ -128,7 +129,7 @@ export async function deleteWorkspace(id: string) {
     const response = await fetch(API, options);
     const data = await response.json();
 
-    console.log(data)
+    console.log(data);
 
     return data;
   } catch (error) {
@@ -136,4 +137,48 @@ export async function deleteWorkspace(id: string) {
       return error;
     }
   }
+}
+
+export async function getUserAccount(id: string) {
+  const API = `http://localhost:3000/api/user/${id}`;
+  const tokenId = getCookie("login");
+  const option = {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + tokenId,
+    },
+  };
+  try {
+    const res = await fetch(API, option);
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      return error;
+    }
+  }
+}
+
+export async function loginAccount(credentials: ICredentials) {
+  const API = `http://localhost:3000/api/auth/login`;
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  };
+  try {
+    const res = await fetch(API, options);
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function logout() {
+  const API = `http://localhost:3000/api/auth/logout`;
 }

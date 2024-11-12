@@ -2,7 +2,7 @@ import { getWorkSpace } from "@/utils/data";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Play from "./Play";
-import { IPlaygroundData } from "@/lib/definitions";
+import { IPlaygroundData } from "@/utils/definitions";
 import { Loader, Loader2 } from "lucide-react";
 
 export default function Playground() {
@@ -42,8 +42,13 @@ export default function Playground() {
         {loadingSheet ? (
           <div className="flex justify-center items-center w-screen h-screen align-middle">
             <div className="">
-              <h1 className="text-3xl text-slate-300 text-center py-3">Preparing Workspace</h1>
-              <Loader className="animate-spin text-slate-300 w-full" size={50} />
+              <h1 className="text-3xl text-slate-300 text-center py-3">
+                Preparing Workspace
+              </h1>
+              <Loader
+                className="animate-spin text-slate-300 w-full"
+                size={50}
+              />
             </div>
           </div>
         ) : (
